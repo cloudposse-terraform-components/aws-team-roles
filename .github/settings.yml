@@ -5,5 +5,3 @@ repository:
   description: This component is responsible for provisioning user and system IAM roles outside the `identity` account
   homepage: https://cloudposse.com/accelerate
   topics: terraform, terraform-component
-
-
