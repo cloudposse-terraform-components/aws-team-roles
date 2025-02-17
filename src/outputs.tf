@@ -4,6 +4,7 @@ output "role_name_role_arn_map" {
 }
 
 resource "local_file" "account_info" {
+  count = module.this.enabled ? 1 : 0
   content = templatefile("${path.module}/iam-role-info.tftmpl", {
     role_name_map          = local.role_name_map
     role_name_role_arn_map = local.role_name_role_arn_map

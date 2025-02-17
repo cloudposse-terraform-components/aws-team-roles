@@ -1,10 +1,10 @@
 components:
   terraform:
-    aws-team-roles/basic:
+    aws-team-roles/disabled:
       metadata:
         component: target
       vars:
-        enabled: true
+        enabled: false
         roles:
           # `template` serves as the default configuration for other roles via the YAML anchor.
           # However, `atmos` does not support "import" of YAML anchors, so if you define a new role
