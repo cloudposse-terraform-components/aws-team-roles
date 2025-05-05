@@ -1,0 +1,79 @@
+components:
+  terraform:
+    aws-team-roles/basic:
+      metadata:
+        component: target
+      vars:
+        enabled: true
+        roles:
+          # `template` serves as the default configuration for other roles via the YAML anchor.
+          # However, `atmos` does not support "import" of YAML anchors, so if you define a new role
+          # in another file, you will not be able to reference this anchor.
+          template: &user-template # If `enabled: false`, the role will not be created in this account
+            enabled: false
+
+            # `max_session_duration` set the maximum session duration (in seconds) for the IAM roles.
+            # This setting can have a value from 3600 (1 hour) to 43200 (12 hours).
+            # For roles people log into via SAML, a long duration is convenient to prevent them
+            # from having to frequently re-authenticate.
+            # For roles assumed from some other role, the setting is practically irrelevant, because
+            # the AssumeRole API limits the duration to 1 hour in any case.
+            # References:
+            # - https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use.html
+            # - https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html
+            max_session_duration: 3600 # 1 hour in seconds
+
+            # role_policy_arns are the IAM Policy ARNs to attach to this policy. In addition to real ARNs,
+            # you can use keys in the `custom_policy_map` in `main.tf` to select policies defined in the component.
+            # If you are using keys from the map, plans look better if you put them after the real role ARNs.
+            role_policy_arns: []
+            role_description: "Template role, should not exist"
+
+            # If `aws_saml_login_enabled: true` then the role will be available via SAML logins,
+            # but only via the SAML IDPs configured for this account.
+            # Otherwise, it will only be accessible via `assume role`.
+            aws_saml_login_enabled: false
+
+            ## The following attributes control access to this role via `assume role`.
+            ## `trusted_*` grants access, `denied_*` denies access.
+            ## If a role is both trusted and denied, it will not be able to access this role.
+
+            # Permission sets specify users operating from the given AWS SSO permission set in this account.
+            trusted_permission_sets: []
+            denied_permission_sets: []
+
+            # Primary roles specify the short role names of roles in the primary (identity)
+            # account that are allowed to assume this role.
+            # BE CAREFUL: This is setting the default access for other roles.
+            trusted_teams: []
+            denied_teams: []
+
+            # Role ARNs specify Role ARNs in any account that are allowed to assume this role.
+            # BE CAREFUL: there is nothing limiting these Role ARNs to roles within our organization.
+            trusted_role_arns: []
+            denied_role_arns: []
+
+          ##
+          ## admin and terraform are the core team roles
+          ##
+
+          admin:
+            <<: *user-template
+            enabled: true
+            role_policy_arns:
+              - "arn:aws:iam::aws:policy/AdministratorAccess"
+            role_description: "Full administration of this account"
+            trusted_teams: ["admin"]
+
+          terraform:
+            <<: *user-template
+            enabled: true
+            # We require Terraform to be allowed to create and modify IAM roles
+            # and policies (e.g. for EKS service accounts), so there is no use trying to restrict it.
+            # For better security, we could segregate components that needed
+            # administrative permissions and use a more restrictive role
+            # for Terraform, such as PowerUser (further restricted to deny AWS SSO changes).
+            role_policy_arns:
+              - "arn:aws:iam::aws:policy/AdministratorAccess"
+            role_description: "Role for Terraform administration of this account"
+            trusted_teams: ["admin", "spacelift"]

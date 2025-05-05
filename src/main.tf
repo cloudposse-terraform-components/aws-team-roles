@@ -1,5 +1,5 @@
 locals {
-  roles_config      = { for key, value in var.roles : key => value if lookup(value, "enabled", false) }
+  roles_config      = module.this.enabled ? { for key, value in var.roles : key => value if lookup(value, "enabled", false) } : {}
   roles_policy_arns = { for role, config in local.roles_config : role => config.role_policy_arns }
 
   # It would be nice if we could use null-label and set name = each.key but we do not want the name to be normalized
@@ -25,12 +25,12 @@ locals {
   # Also work around https://github.com/hashicorp/terraform/issues/22404
   # Create a list of strings that combine role name with policy ARN to attach to the role
   role_attachments_product_list = flatten([for role_name, arns in local.roles_policy_arns : [for arn in arns : "${role_name}+${arn}"]])
-  role_attachments = { for role_arns in local.role_attachments_product_list : (
+  role_attachments = module.this.enabled ? { for role_arns in local.role_attachments_product_list : (
     # Make the first key just the role name, to keep the keys short when possible
     local.roles_policy_arns[split("+", role_arns)[0]][0] == split("+", role_arns)[1] ? split("+", role_arns)[0] : role_arns) =>
     # The value is the policy ARN to attach to the role
     try(local.custom_policy_map[split("+", role_arns)[1]], split("+", role_arns)[1])
-  }
+  } : {}
 
   this_account_name             = try(module.this.account, module.this.descriptors["account_name"], module.this.stage)
   identity_account_account_name = module.iam_roles.identity_account_account_name
