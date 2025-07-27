@@ -30,3 +30,9 @@ variable "trusted_github_repos" {
     EOT
   default     = {}
 }
+
+variable "aws_saml_component_name" {
+  type        = string
+  description = "The name of the aws-saml component"
+  default     = "aws-saml"
+}
