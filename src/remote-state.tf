@@ -2,7 +2,7 @@ module "aws_saml" {
   source  = "cloudposse/stack-config/yaml//modules/remote-state"
   version = "1.8.0"
 
-  component  = "aws-saml"
+  component  = var.aws_saml_component_name
   privileged = true
 
   ignore_errors = true
