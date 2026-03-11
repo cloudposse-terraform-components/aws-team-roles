@@ -35,7 +35,6 @@ locals {
   this_account_name             = try(module.this.account, module.this.descriptors["account_name"], module.this.stage)
   identity_account_account_name = module.iam_roles.identity_account_account_name
 
-  aws_partition = module.iam_roles.aws_partition
 }
 
 module "assume_role" {
