@@ -228,6 +228,7 @@ components:
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.9.0, < 6.0.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 1.3 |
+| <a name="requirement_utils"></a> [utils](#requirement\_utils) | >= 2.0.0, < 3.0.0 |
 
 ## Providers
 
@@ -241,7 +242,7 @@ components:
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_assume_role"></a> [assume\_role](#module\_assume\_role) | ../account-map/modules/team-assume-role-policy | n/a |
-| <a name="module_aws_saml"></a> [aws\_saml](#module\_aws\_saml) | cloudposse/stack-config/yaml//modules/remote-state | 1.8.0 |
+| <a name="module_aws_saml"></a> [aws\_saml](#module\_aws\_saml) | cloudposse/stack-config/yaml//modules/remote-state | 2.0.0 |
 | <a name="module_iam_roles"></a> [iam\_roles](#module\_iam\_roles) | ../account-map/modules/iam-roles | n/a |
 | <a name="module_this"></a> [this](#module\_this) | cloudposse/label/null | 0.25.0 |
 
